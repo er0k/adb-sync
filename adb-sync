@@ -851,7 +851,8 @@ def main() -> None:
   allow_overwrite = not args.no_clobber
   copy_links = args.copy_links
   dry_run = args.dry_run
-  excludes = {'p': args.exclude.split(','), 'x': []}
+  p = [] if not args.exclude else args.exclude.split(',')
+  excludes = {'p': p, 'x': []}
   local_to_remote = True
   remote_to_local = False
   if args.two_way:
