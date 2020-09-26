@@ -365,13 +365,16 @@ def BuildFileList(fs: OSLike, path: bytes, follow_links: bool,
       files = fs.listdir(path)
     except OSError:
       return
-    if isinstance(fs, AdbFileSystem):
-      for x in excludes['p']:
-        excludes['x'].extend(fs.glob(path + b'/' + x.encode()))
+    for x in excludes['p']:
+      if isinstance(fs, AdbFileSystem):
+        g = fs.glob(path + x.encode())
+      else:
+        g = glob.glob(path + x.encode())
+      excludes['x'].extend(g)
     for n in files:
       if n == b'.' or n == b'..':
         continue
-      if ((path + b'/' + n) in excludes['x']) or (n.decode() in excludes['x']):
+      if ((path + n) in excludes['x']):
         logging.info('Excluding %s.', path.decode() + '/' + n.decode())
         continue
       for t in BuildFileList(fs, path + b'/' + n, follow_links,
